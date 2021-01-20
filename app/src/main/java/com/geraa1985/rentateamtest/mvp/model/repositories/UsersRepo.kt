@@ -21,7 +21,7 @@ class UsersRepo : IUsersRepo {
     @Inject
     lateinit var usersCache: IUsersCache
 
-    private var totalPages by Delegates.notNull<Int>()
+    private var totalPages = 0
 
     init {
         MyApp.instance.mainGraph.inject(this)
