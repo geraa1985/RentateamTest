@@ -31,7 +31,7 @@ class UsersListPresenter : MvpPresenter<IUsersListView>() {
     }
 
     private var currentPage = 1
-    private val totalPages: Int by lazy { usersRepo.getPages() }
+    private val totalPages = 2
 
     class UsersListPresenter : IUserListPresenter {
 
@@ -51,6 +51,7 @@ class UsersListPresenter : MvpPresenter<IUsersListView>() {
 
     val usersListPresenter = UsersListPresenter()
     private val compositeDisposable = CompositeDisposable()
+
     private val subject: PublishSubject<User> = PublishSubject.create()
 
     override fun onFirstViewAttach() {
@@ -58,8 +59,8 @@ class UsersListPresenter : MvpPresenter<IUsersListView>() {
         viewState.initRvUsers()
         loadData()
 
-        subject.observeOn(Schedulers.io()).subscribe { gitHubUser ->
-            usersRepo.putUser(gitHubUser)
+        subject.observeOn(Schedulers.io()).subscribe { user ->
+            usersRepo.putUser(user)
         }
 
         usersListPresenter.itemClickListener = {

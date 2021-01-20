@@ -10,12 +10,14 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import javax.inject.Inject
 import kotlin.properties.Delegates
 
-class UsersRepo : IUsersRepo{
+class UsersRepo : IUsersRepo {
 
     @Inject
     lateinit var networkStatus: INetworkStatus
+
     @Inject
     lateinit var api: IApiData
+
     @Inject
     lateinit var usersCache: IUsersCache
 
@@ -41,11 +43,7 @@ class UsersRepo : IUsersRepo{
     override fun getPages() = totalPages
 
     override fun putUser(user: User) {
-        networkStatus.isOnlineSingle().subscribe { isOnline ->
-            if (isOnline) {
-                usersCache.putUser(user)
-            }
-        }
+        usersCache.putUser(user)
     }
 
 }

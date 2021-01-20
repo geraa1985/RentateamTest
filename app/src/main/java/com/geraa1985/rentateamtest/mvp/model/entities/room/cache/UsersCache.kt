@@ -16,19 +16,6 @@ class UsersCache : IUsersCache {
         MyApp.instance.mainGraph.inject(this)
     }
 
-    override fun putUsers(users: List<User>) {
-        val roomUsers = users.map {
-            RoomUser(
-                it.id,
-                it.firstName ?: "",
-                it.lastName ?: "",
-                it.email ?: "",
-                it.avatar ?: ""
-            )
-        }
-        db.userDAO.insert(roomUsers)
-    }
-
     override fun getUsers(): Single<List<User>>  =
         Single.just(db.userDAO.getAll().map {
             User(
@@ -53,25 +40,4 @@ class UsersCache : IUsersCache {
         db.userDAO.insert(roomUser)
     }
 
-    override fun getUser(login: String): Single<User> =
-        Single.just(db.userDAO.getUser(login)?.let {
-            User(
-                it.id,
-                it.email ?: "",
-                it.firstName ?: "",
-                it.lastName ?: "",
-                it.avatar ?: ""
-            )
-        })
-
-    override fun getUsersByName(name: String): Single<List<User>> =
-        Single.just(db.userDAO.getUsersByName(name).map {
-            User(
-                it.id,
-                it.email ?: "",
-                it.firstName ?: "",
-                it.lastName ?: "",
-                it.avatar ?: ""
-            )
-        })
 }
