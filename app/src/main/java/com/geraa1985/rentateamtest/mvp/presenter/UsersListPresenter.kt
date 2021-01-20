@@ -31,9 +31,9 @@ class UsersListPresenter : MvpPresenter<IUsersListView>() {
     }
 
     private var currentPage = 1
-    private val totalPages = 2
+    private val totalPages: Int by lazy { usersRepo.getPages() }
 
-    class UsersListPresenter : IUserListPresenter {
+    class ItemListPresenter : IUserListPresenter {
 
         val users = mutableListOf<User>()
 
@@ -49,7 +49,7 @@ class UsersListPresenter : MvpPresenter<IUsersListView>() {
         }
     }
 
-    val usersListPresenter = UsersListPresenter()
+    val itemListPresenter = ItemListPresenter()
     private val compositeDisposable = CompositeDisposable()
 
     private val subject: PublishSubject<User> = PublishSubject.create()
@@ -63,8 +63,8 @@ class UsersListPresenter : MvpPresenter<IUsersListView>() {
             usersRepo.putUser(user)
         }
 
-        usersListPresenter.itemClickListener = {
-            val user = usersListPresenter.users[it.pos]
+        itemListPresenter.itemClickListener = {
+            val user = itemListPresenter.users[it.pos]
             subject.onNext(user)
             router.navigateTo(FragmentScreen.userScreen(user))
         }
@@ -75,9 +75,11 @@ class UsersListPresenter : MvpPresenter<IUsersListView>() {
         val disposable1 = usersRepo.getUsers(currentPage)
             .observeOn(uiScheduler)
             .subscribe({
-                usersListPresenter.users.addAll(it)
+                val oldList = mutableListOf<User>()
+                oldList.addAll(itemListPresenter.users)
+                itemListPresenter.users.addAll(it)
                 viewState.hideProgress()
-                viewState.updateUsersList()
+                viewState.updateUsersList(oldList, it)
             }, { error ->
                 error.message?.let {
                     viewState.showError(it)
@@ -91,9 +93,10 @@ class UsersListPresenter : MvpPresenter<IUsersListView>() {
             val disposable2 = usersRepo.getUsers(++currentPage)
                 .observeOn(uiScheduler)
                 .subscribe({
-                    usersListPresenter.users.addAll(it)
-                    viewState.hideProgress()
-                    viewState.updateUsersList()
+                    val oldList = mutableListOf<User>()
+                    oldList.addAll(itemListPresenter.users)
+                    itemListPresenter.users.addAll(it)
+                    viewState.updateUsersList(oldList, it)
                 }, { error ->
                     error.message?.let {
                         viewState.showError(it)

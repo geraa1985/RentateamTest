@@ -6,13 +6,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.geraa1985.rentateamtest.MyApp
 import com.geraa1985.rentateamtest.databinding.FragmentUsersListBinding
+import com.geraa1985.rentateamtest.mvp.model.entities.base.User
 import com.geraa1985.rentateamtest.mvp.presenter.UsersListPresenter
 import com.geraa1985.rentateamtest.mvp.view.IUsersListView
 import com.geraa1985.rentateamtest.ui.BackButtonListener
+import com.geraa1985.rentateamtest.ui.adapters.UserDiffUtilCallback
 import com.geraa1985.rentateamtest.ui.adapters.UserRVAdapter
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
@@ -60,12 +63,14 @@ class UsersListFragment: MvpAppCompatFragment(), IUsersListView, BackButtonListe
 
     override fun initRvUsers() {
         binding.rvUsers.layoutManager = LinearLayoutManager(requireContext())
-        adapter = UserRVAdapter(presenter.usersListPresenter)
+        adapter = UserRVAdapter(presenter.itemListPresenter)
         binding.rvUsers.adapter = adapter
     }
 
-    override fun updateUsersList() {
-        adapter?.notifyDataSetChanged()
+    override fun updateUsersList(oldList: List<User>, newList: List<User>) {
+        val userDiffUtilCallback = UserDiffUtilCallback(oldList, newList)
+        val userDiffResult = DiffUtil.calculateDiff(userDiffUtilCallback)
+        adapter?.let { userDiffResult.dispatchUpdatesTo(it) }
     }
 
     @SuppressLint("ShowToast")
