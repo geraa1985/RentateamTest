@@ -65,10 +65,12 @@ class UsersListPresenter: MvpPresenter<IUsersListView>() {
     }
 
     private fun loadData() {
+        viewState.showProgress()
         val disposable1 = usersRepo.getUsers()
             .observeOn(uiScheduler)
             .subscribe({
                 usersListPresenter.users.addAll(it)
+                viewState.hideProgress()
                 viewState.updateUsersList()
             }, { error ->
                 error.message?.let {

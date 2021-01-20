@@ -35,6 +35,14 @@ class UsersListFragment: MvpAppCompatFragment(), IUsersListView, BackButtonListe
         return binding.root
     }
 
+    override fun showProgress() {
+        binding.progressCircular.visibility = View.VISIBLE
+    }
+
+    override fun hideProgress() {
+        binding.progressCircular.visibility = View.INVISIBLE
+    }
+
     override fun initRvUsers() {
         binding.rvUsers.layoutManager = LinearLayoutManager(requireContext())
         adapter = UserRVAdapter(presenter.usersListPresenter)

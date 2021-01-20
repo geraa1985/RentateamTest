@@ -8,4 +8,6 @@ interface IUsersListView: MvpView {
     fun initRvUsers()
     fun updateUsersList()
     fun showError(message: String)
+    fun showProgress()
+    fun hideProgress()
 }
