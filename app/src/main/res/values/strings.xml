@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Rentateam Test</string>
+    <string name="users">Users</string>
+    <string name="about">About</string>
+    <string name="avatar">Avatar</string>
+
+    <string name="about_text">Test task for <br/>Rentateam</string>
+</resources>
