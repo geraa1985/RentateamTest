@@ -1,9 +1,8 @@
 package com.geraa1985.rentateamtest.di.modules
 
-import com.geraa1985.rentateamtest.MyApp
 import com.geraa1985.rentateamtest.mvp.model.api.IApiData
 import com.geraa1985.rentateamtest.mvp.model.networkstatus.INetworkStatus
-import com.geraa1985.rentateamtest.ui.networkstatus.NetworkStatus
+import com.geraa1985.rentateamtest.mvp.model.networkstatus.NetworkStatus
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -41,6 +40,6 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    fun networkStatus(app: MyApp): INetworkStatus = NetworkStatus(app)
+    fun networkStatus(@Named("baseUrl") baseUrl: String): INetworkStatus = NetworkStatus(baseUrl)
 
 }

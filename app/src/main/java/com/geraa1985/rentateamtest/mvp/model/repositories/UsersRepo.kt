@@ -27,18 +27,18 @@ class UsersRepo : IUsersRepo {
         MyApp.instance.mainGraph.inject(this)
     }
 
-
     override fun getUsers(page: Int): Single<List<User>> =
-        networkStatus.isOnlineSingle().flatMap { isOnline ->
-            if (isOnline) {
-                api.getUsers(page).flatMap { apiResult ->
-                    totalPages = apiResult.totalPages
-                    Single.just(apiResult.data)
+        networkStatus.checkConnection().flatMap { isOnline ->
+                if (isOnline) {
+                    api.getUsers(page).flatMap { apiResult ->
+                        totalPages = apiResult.totalPages
+                        Single.just(apiResult.data)
+                    }
+                } else {
+                    usersCache.getUsers()
                 }
-            } else {
-                usersCache.getUsers()
-            }
-        }.subscribeOn(Schedulers.io())
+            }.subscribeOn(Schedulers.io())
+
 
     override fun getPages() = totalPages
 
