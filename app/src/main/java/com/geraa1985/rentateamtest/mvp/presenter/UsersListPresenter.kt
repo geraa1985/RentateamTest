@@ -15,18 +15,23 @@ import moxy.MvpPresenter
 import ru.terrakok.cicerone.Router
 import javax.inject.Inject
 
-class UsersListPresenter: MvpPresenter<IUsersListView>() {
+class UsersListPresenter : MvpPresenter<IUsersListView>() {
 
     @Inject
     lateinit var router: Router
+
     @Inject
     lateinit var usersRepo: IUsersRepo
+
     @Inject
     lateinit var uiScheduler: Scheduler
 
     init {
         MyApp.instance.mainGraph.inject(this)
     }
+
+    private var currentPage = 1
+    private val totalPages: Int by lazy { usersRepo.getPages() }
 
     class UsersListPresenter : IUserListPresenter {
 
@@ -65,10 +70,12 @@ class UsersListPresenter: MvpPresenter<IUsersListView>() {
     }
 
     private fun loadData() {
-        val disposable1 = usersRepo.getUsers()
+        viewState.showProgress()
+        val disposable1 = usersRepo.getUsers(currentPage)
             .observeOn(uiScheduler)
             .subscribe({
                 usersListPresenter.users.addAll(it)
+                viewState.hideProgress()
                 viewState.updateUsersList()
             }, { error ->
                 error.message?.let {
@@ -76,6 +83,23 @@ class UsersListPresenter: MvpPresenter<IUsersListView>() {
                 }
             })
         compositeDisposable.add(disposable1)
+    }
+
+    fun loadPage(visibleItemCount: Int, totalItemCount: Int, firstVisibleItem: Int) {
+        if ((visibleItemCount+firstVisibleItem) >= totalItemCount && currentPage < totalPages) {
+            val disposable2 = usersRepo.getUsers(++currentPage)
+                .observeOn(uiScheduler)
+                .subscribe({
+                    usersListPresenter.users.addAll(it)
+                    viewState.hideProgress()
+                    viewState.updateUsersList()
+                }, { error ->
+                    error.message?.let {
+                        viewState.showError(it)
+                    }
+                })
+            compositeDisposable.add(disposable2)
+        }
     }
 
     fun backClicked(): Boolean {

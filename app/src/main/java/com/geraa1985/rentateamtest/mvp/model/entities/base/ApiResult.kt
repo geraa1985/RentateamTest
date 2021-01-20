@@ -6,5 +6,7 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class ApiResult(
-    @Expose val data: List<User>
+    @Expose val data: List<User>,
+    @Expose val page: Int,
+    @Expose val totalPages: Int
 ): Parcelable

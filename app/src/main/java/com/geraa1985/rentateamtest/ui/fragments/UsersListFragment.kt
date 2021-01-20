@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.geraa1985.rentateamtest.MyApp
 import com.geraa1985.rentateamtest.databinding.FragmentUsersListBinding
 import com.geraa1985.rentateamtest.mvp.presenter.UsersListPresenter
@@ -33,6 +34,28 @@ class UsersListFragment: MvpAppCompatFragment(), IUsersListView, BackButtonListe
     ): View {
         binding = FragmentUsersListBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onStart() {
+        super.onStart()
+        binding.rvUsers.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                val visibleItemCount = (recyclerView.layoutManager as LinearLayoutManager).childCount
+                val totalItemCount = (recyclerView.layoutManager as LinearLayoutManager).itemCount
+                val firstVisibleItem = (recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+
+                presenter.loadPage(visibleItemCount,totalItemCount,firstVisibleItem)
+            }
+        })
+    }
+
+    override fun showProgress() {
+        binding.progressCircular.visibility = View.VISIBLE
+    }
+
+    override fun hideProgress() {
+        binding.progressCircular.visibility = View.INVISIBLE
     }
 
     override fun initRvUsers() {
