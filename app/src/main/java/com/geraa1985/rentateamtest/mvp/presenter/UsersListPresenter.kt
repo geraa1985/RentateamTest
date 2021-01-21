@@ -79,7 +79,7 @@ class UsersListPresenter : MvpPresenter<IUsersListView>() {
                 oldList.addAll(itemListPresenter.users)
                 itemListPresenter.users.addAll(it)
                 viewState.hideProgress()
-                viewState.updateUsersList(oldList, it)
+                viewState.updateUsersList(oldList, itemListPresenter.users)
             }, { error ->
                 error.message?.let {
                     viewState.showError(it)
@@ -96,7 +96,7 @@ class UsersListPresenter : MvpPresenter<IUsersListView>() {
                     val oldList = mutableListOf<User>()
                     oldList.addAll(itemListPresenter.users)
                     itemListPresenter.users.addAll(it)
-                    viewState.updateUsersList(oldList, it)
+                    viewState.updateUsersList(oldList, itemListPresenter.users)
                 }, { error ->
                     error.message?.let {
                         viewState.showError(it)
