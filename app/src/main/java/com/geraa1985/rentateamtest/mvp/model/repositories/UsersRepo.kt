@@ -8,7 +8,6 @@ import com.geraa1985.rentateamtest.mvp.model.networkstatus.INetworkStatus
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import javax.inject.Inject
-import kotlin.properties.Delegates
 
 class UsersRepo : IUsersRepo {
 
@@ -39,6 +38,17 @@ class UsersRepo : IUsersRepo {
                 }
             }.subscribeOn(Schedulers.io())
 
+    override fun getNewPageUsers(page: Int): Single<List<User>>? =
+        networkStatus.checkConnection().flatMap { isOnline ->
+            if (isOnline) {
+                api.getUsers(page).flatMap { apiResult ->
+                    totalPages = apiResult.totalPages
+                    Single.just(apiResult.data)
+                }
+            } else {
+                null
+            }
+        }.subscribeOn(Schedulers.io())
 
     override fun getPages() = totalPages
 

@@ -89,10 +89,10 @@ class UsersListPresenter : MvpPresenter<IUsersListView>() {
     }
 
     fun loadPage(visibleItemCount: Int, totalItemCount: Int, firstVisibleItem: Int) {
-        if ((visibleItemCount+firstVisibleItem) >= totalItemCount && currentPage < totalPages) {
-            val disposable2 = usersRepo.getUsers(++currentPage)
-                .observeOn(uiScheduler)
-                .subscribe({
+        if ((visibleItemCount+firstVisibleItem+3) > totalItemCount && currentPage < totalPages) {
+            val disposable2 = usersRepo.getNewPageUsers(++currentPage)
+                ?.observeOn(uiScheduler)
+                ?.subscribe({
                     val oldList = mutableListOf<User>()
                     oldList.addAll(itemListPresenter.users)
                     itemListPresenter.users.addAll(it)
